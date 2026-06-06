@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>WinProbets – Pronósticos Deportivos de Élite</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg:        #050810;
+    --bg2:       #080d1a;
+    --card:      #0c1226;
+    --accent:    #00e5a0;
+    --accent2:   #00b8ff;
+    --gold:      #f0c040;
+    --text:      #e8eaf6;
+    --muted:     #6b7299;
+    --border:    rgba(0,229,160,.15);
+    --glow:      0 0 40px rgba(0,229,160,.25);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Outfit', sans-serif;
+    overflow-x: hidden;
+  }
+
+  /* ── NOISE OVERLAY ── */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.04'/%3E%3C/svg%3E");
+    pointer-events: none; z-index: 0;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; width: 100%; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1.2rem 5%;
+    background: rgba(5,8,16,.85);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .logo {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 1.9rem;
+    letter-spacing: .08em;
+    color: var(--text);
+  }
+  .logo span { color: var(--accent); }
+
+  nav ul {
+    list-style: none;
+    display: flex; gap: 2.5rem;
+  }
+  nav ul a {
+    text-decoration: none;
+    color: var(--muted);
+    font-size: .9rem;
+    font-weight: 500;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+    transition: color .2s;
+  }
+  nav ul a:hover { color: var(--accent); }
+
+  .nav-cta {
+    background: var(--accent);
+    color: #050810 !important;
+    padding: .55rem 1.4rem;
+    border-radius: 6px;
+    font-weight: 700 !important;
+    transition: box-shadow .2s, transform .15s !important;
+  }
+  .nav-cta:hover {
+    box-shadow: 0 0 20px rgba(0,229,160,.5);
+    transform: translateY(-1px);
+    color: #050810 !important;
+  }
+
+  /* ── HERO ── */
+  #hero {
+    min-height: 100vh;
+    display: flex; align-items: center;
+    padding: 8rem 5% 4rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(90px);
+    pointer-events: none;
+  }
+  .orb1 { width: 600px; height: 600px; top: -150px; right: -100px; background: radial-gradient(circle, rgba(0,229,160,.18) 0%, transparent 70%); }
+  .orb2 { width: 400px; height: 400px; bottom: 0; left: -80px; background: radial-gradient(circle, rgba(0,184,255,.14) 0%, transparent 70%); }
+
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+    position: relative; z-index: 1;
+  }
+
+  .hero-tag {
+    display: inline-flex; align-items: center; gap: .5rem;
+    background: rgba(0,229,160,.1);
+    border: 1px solid var(--border);
+    color: var(--accent);
+    padding: .4rem 1rem;
+    border-radius: 100px;
+    font-size: .8rem;
+    font-weight: 600;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+    animation: fadeUp .6s ease both;
+  }
+  .hero-tag::before {
+    content: '';
+    width: 6px; height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+    animation: pulse 1.5s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: .4; transform: scale(.7); }
+  }
+
+  .hero-title {
+    font-family: 'Bebas Neue', cursive;
+    font-size: clamp(3.5rem, 7vw, 6.5rem);
+    line-height: .95;
+    letter-spacing: .02em;
+    margin-bottom: 1.5rem;
+    animation: fadeUp .7s .1s ease both;
+  }
+  .hero-title .line2 {
+    color: var(--accent);
+    display: block;
+    -webkit-text-stroke: 2px var(--accent);
+    color: transparent;
+  }
+  .hero-title .line3 { display: block; }
+
+  .hero-sub {
+    font-size: 1.1rem;
+    color: var(--muted);
+    line-height: 1.7;
+    max-width: 500px;
+    margin-bottom: 2.5rem;
+    font-weight: 300;
+    animation: fadeUp .7s .2s ease both;
+  }
+  .hero-sub strong { color: var(--text); font-weight: 600; }
+
+  .hero-actions {
+    display: flex; gap: 1rem; flex-wrap: wrap;
+    animation: fadeUp .7s .3s ease both;
+  }
+
+  .btn-primary {
+    display: inline-flex; align-items: center; gap: .6rem;
+    background: var(--accent);
+    color: #050810;
+    padding: 1rem 2rem;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 1rem;
+    text-decoration: none;
+    transition: box-shadow .2s, transform .15s;
+    letter-spacing: .02em;
+  }
+  .btn-primary:hover {
+    box-shadow: 0 0 30px rgba(0,229,160,.5);
+    transform: translateY(-2px);
+  }
+
+  .btn-secondary {
+    display: inline-flex; align-items: center; gap: .6rem;
+    background: transparent;
+    color: var(--text);
+    padding: 1rem 2rem;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 1rem;
+    text-decoration: none;
+    border: 1px solid rgba(255,255,255,.15);
+    transition: border-color .2s, background .2s;
+  }
+  .btn-secondary:hover {
+    border-color: var(--accent);
+    background: rgba(0,229,160,.05);
+    color: var(--accent);
+  }
+
+  /* Hero stats */
+  .hero-stats {
+    display: flex; gap: 2rem; margin-top: 3rem;
+    animation: fadeUp .7s .4s ease both;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border);
+  }
+  .stat-item { display: flex; flex-direction: column; }
+  .stat-num {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 2.2rem;
+    letter-spacing: .05em;
+    color: var(--accent);
+    line-height: 1;
+  }
+  .stat-label {
+    font-size: .8rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    margin-top: .2rem;
+  }
+
+  /* hero visual */
+  .hero-visual {
+    display: flex; flex-direction: column; gap: 1rem;
+    animation: fadeRight .8s .3s ease both;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeRight {
+    from { opacity: 0; transform: translateX(30px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+
+  .pick-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.2rem 1.5rem;
+    display: flex; align-items: center; gap: 1.2rem;
+    transition: transform .2s, box-shadow .2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .pick-card::before {
+    content: '';
+    position: absolute; left: 0; top: 0; bottom: 0;
+    width: 3px;
+  }
+  .pick-card.win::before  { background: var(--accent); }
+  .pick-card.live::before { background: var(--gold); }
+  .pick-card.new::before  { background: var(--accent2); }
+
+  .pick-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 40px rgba(0,0,0,.4);
+  }
+
+  .pick-sport {
+    width: 44px; height: 44px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.4rem;
+    flex-shrink: 0;
+  }
+  .pick-sport.futbol { background: rgba(0,229,160,.12); }
+  .pick-sport.basket { background: rgba(0,184,255,.12); }
+  .pick-sport.tenis  { background: rgba(240,192,64,.12); }
+
+  .pick-info { flex: 1; }
+  .pick-match { font-size: .95rem; font-weight: 600; }
+  .pick-tip   { font-size: .8rem; color: var(--muted); margin-top: .15rem; }
+
+  .pick-badge {
+    font-size: .72rem;
+    font-weight: 700;
+    padding: .3rem .7rem;
+    border-radius: 100px;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+  }
+  .badge-win  { background: rgba(0,229,160,.15); color: var(--accent); }
+  .badge-live { background: rgba(240,192,64,.15); color: var(--gold); }
+  .badge-new  { background: rgba(0,184,255,.15); color: var(--accent2); }
+
+  .pick-odd {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 1.6rem;
+    color: var(--accent);
+    letter-spacing: .05em;
+  }
+
+  /* ── SECTION COMMON ── */
+  section { padding: 6rem 5%; }
+  .section-inner { max-width: 1200px; margin: 0 auto; }
+
+  .section-label {
+    font-size: .78rem;
+    text-transform: uppercase;
+    letter-spacing: .15em;
+    color: var(--accent);
+    font-weight: 700;
+    margin-bottom: .8rem;
+  }
+  .section-title {
+    font-family: 'Bebas Neue', cursive;
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    line-height: 1;
+    letter-spacing: .03em;
+    margin-bottom: 1.2rem;
+  }
+  .section-sub {
+    color: var(--muted);
+    font-size: 1.05rem;
+    line-height: 1.7;
+    max-width: 600px;
+  }
+
+  /* ── WHY ── */
+  #why { background: var(--bg2); }
+
+  .why-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+    gap: 1.5rem;
+    margin-top: 3.5rem;
+  }
+
+  .why-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 2rem;
+    transition: transform .2s, box-shadow .2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .why-card::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(circle at 80% 20%, rgba(0,229,160,.06) 0%, transparent 60%);
+    pointer-events: none;
+  }
+  .why-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 50px rgba(0,0,0,.4), var(--glow);
+  }
+
+  .why-icon {
+    width: 52px; height: 52px;
+    border-radius: 12px;
+    background: rgba(0,229,160,.1);
+    border: 1px solid rgba(0,229,160,.2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.5rem;
+    margin-bottom: 1.4rem;
+  }
+
+  .why-num {
+    position: absolute; top: 1.5rem; right: 1.5rem;
+    font-family: 'Bebas Neue', cursive;
+    font-size: 3rem;
+    color: rgba(255,255,255,.04);
+    line-height: 1;
+  }
+
+  .why-card h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: .6rem;
+  }
+  .why-card p {
+    color: var(--muted);
+    font-size: .92rem;
+    line-height: 1.65;
+  }
+
+  /* ── TELEGRAM SECTION ── */
+  #telegram {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .tg-split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5rem;
+    align-items: center;
+  }
+
+  .tg-features {
+    margin-top: 2.5rem;
+    display: flex; flex-direction: column; gap: 1rem;
+  }
+
+  .tg-feature {
+    display: flex; align-items: flex-start; gap: 1rem;
+    padding: 1.1rem 1.3rem;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    transition: border-color .2s;
+  }
+  .tg-feature:hover { border-color: var(--accent); }
+
+  .tg-feature-icon {
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    background: rgba(0,229,160,.1);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1rem;
+    flex-shrink: 0;
+    margin-top: .1rem;
+  }
+
+  .tg-feature h4 { font-size: .95rem; font-weight: 600; }
+  .tg-feature p  { font-size: .85rem; color: var(--muted); margin-top: .2rem; }
+
+  /* Telegram visual box */
+  .tg-visual {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 2.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .tg-visual::before {
+    content: '';
+    position: absolute;
+    width: 300px; height: 300px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(0,229,160,.15) 0%, transparent 70%);
+    top: -80px; right: -80px;
+    pointer-events: none;
+  }
+
+  .tg-logo-wrap {
+    display: flex; align-items: center; gap: 1rem;
+    margin-bottom: 2rem;
+  }
+  .tg-circle {
+    width: 60px; height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #229ED9, #1b87c2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.8rem;
+    box-shadow: 0 8px 24px rgba(34,158,217,.4);
+  }
+  .tg-name { font-family: 'Bebas Neue', cursive; font-size: 1.8rem; letter-spacing: .04em; }
+  .tg-name span { color: var(--accent); }
+
+  .tg-members {
+    display: flex; align-items: center; gap: .8rem;
+    background: rgba(0,229,160,.07);
+    border: 1px solid rgba(0,229,160,.2);
+    border-radius: 10px;
+    padding: 1rem 1.3rem;
+    margin-bottom: 1.8rem;
+  }
+  .tg-members-num {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 2rem;
+    color: var(--accent);
+    line-height: 1;
+  }
+  .tg-members-label {
+    font-size: .85rem;
+    color: var(--muted);
+    line-height: 1.3;
+  }
+  .tg-members-label strong { color: var(--text); display: block; }
+
+  .tg-msgs {
+    display: flex; flex-direction: column; gap: .8rem;
+    margin-bottom: 2rem;
+  }
+
+  .msg {
+    display: flex; gap: .7rem; align-items: flex-start;
+  }
+  .msg-av {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: .85rem;
+    flex-shrink: 0;
+    font-weight: 700;
+  }
+  .av-bot { background: var(--accent); color: #050810; }
+  .av-user { background: rgba(255,255,255,.1); color: var(--text); }
+
+  .msg-bubble {
+    background: rgba(255,255,255,.05);
+    border-radius: 0 10px 10px 10px;
+    padding: .7rem 1rem;
+    font-size: .85rem;
+    line-height: 1.5;
+    max-width: 240px;
+  }
+  .msg-bubble.bot-msg { background: rgba(0,229,160,.1); border-radius: 0 10px 10px 10px; }
+  .msg-bubble.highlight { color: var(--accent); font-weight: 600; }
+
+  .msg-time { font-size: .72rem; color: var(--muted); margin-top: .3rem; }
+
+  /* ── CTA BANNER ── */
+  #cta {
+    background: var(--bg2);
+    text-align: center;
+  }
+  .cta-inner {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 4rem 2rem;
+    position: relative;
+  }
+  .cta-glow {
+    position: absolute;
+    width: 500px; height: 250px;
+    border-radius: 50%;
+    background: radial-gradient(ellipse, rgba(0,229,160,.15), transparent 70%);
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+  .cta-inner .section-title { font-size: clamp(2.5rem, 5vw, 4.5rem); }
+  .cta-inner .section-sub { margin: 1rem auto 2.5rem; text-align: center; }
+
+  /* ── FOOTER ── */
+  footer {
+    padding: 3rem 5%;
+    border-top: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 1.5rem;
+  }
+
+  .footer-logo {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 1.5rem;
+    letter-spacing: .06em;
+  }
+  .footer-logo span { color: var(--accent); }
+
+  .footer-links {
+    display: flex; gap: 2rem; list-style: none;
+  }
+  .footer-links a {
+    text-decoration: none;
+    color: var(--muted);
+    font-size: .85rem;
+    transition: color .2s;
+  }
+  .footer-links a:hover { color: var(--accent); }
+
+  .footer-socials {
+    display: flex; gap: .8rem;
+  }
+  .social-btn {
+    width: 38px; height: 38px;
+    border-radius: 8px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 1rem;
+    transition: border-color .2s, color .2s;
+  }
+  .social-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  .footer-copy {
+    width: 100%;
+    text-align: center;
+    font-size: .8rem;
+    color: var(--muted);
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+    margin-top: 1rem;
+  }
+
+  /* ── MOBILE ── */
+  @media (max-width: 768px) {
+    nav ul { display: none; }
+    .hero-grid, .tg-split { grid-template-columns: 1fr; gap: 2.5rem; }
+    .hero-visual { order: -1; }
+    footer { flex-direction: column; text-align: center; }
+    .footer-links { flex-wrap: wrap; justify-content: center; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ── NAV ── -->
+<nav>
+  <div class="logo">Win<span>Pro</span>bets</div>
+  <ul>
+    <li><a href="#why">Por qué nosotros</a></li>
+    <li><a href="#telegram">Telegram</a></li>
+    <li><a href="#cta" class="nav-cta">Unirse gratis</a></li>
+  </ul>
+</nav>
+
+<!-- ── HERO ── -->
+<section id="hero">
+  <div class="hero-orb orb1"></div>
+  <div class="hero-orb orb2"></div>
+  <div class="hero-grid">
+    <div class="hero-content">
+      <div class="hero-tag">🔥 Canal líder en español </div>
+      <h1 class="hero-title">
+        APUESTA<br>
+        <span class="line2">CON</span>
+        <span class="line3">DATOS.</span>
+      </h1>
+      <p class="hero-sub">
+        En <strong>WinProbets</strong> cada pronóstico está respaldado por análisis real, estadísticas y años de experiencia.<br>
+        Sin humo. Sin promesas vacías. Solo resultados verificables.
+      </p>
+      <div class="hero-actions">
+        <a href="https://t.me/+CH8wdLsJL6JkN2Nk" class="btn-primary">
+          <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+          Unirse al canal gratis
+        </a>
+        <a href="#why" class="btn-secondary">
+          Saber más
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+      <div class="hero-stats">
+        <div class="stat-item">
+          <span class="stat-num">25K+</span>
+          <span class="stat-label">Miembros</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-num">78%</span>
+          <span class="stat-label">Tasa acierto</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-num">3 años</span>
+          <span class="stat-label">De experiencia</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-num">95%</span>
+          <span class="stat-label">Contenido free</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Live picks panel -->
+    <div class="hero-visual">
+      <div class="pick-card win">
+        <div class="pick-sport futbol">⚽</div>
+        <div class="pick-info">
+          <div class="pick-match">Real Madrid vs Bayern</div>
+          <div class="pick-tip">1X2 — Ambos marcan: SÍ</div>
+        </div>
+        <div>
+          <span class="pick-badge badge-win">✓ WON</span>
+        </div>
+        <div class="pick-odd">2.10</div>
+      </div>
+      <div class="pick-card live">
+        <div class="pick-sport basket">🏀</div>
+        <div class="pick-info">
+          <div class="pick-match">Celtics vs Heat</div>
+          <div class="pick-tip">Hándicap: Celtics -5.5</div>
+        </div>
+        <div>
+          <span class="pick-badge badge-live">🔴 LIVE</span>
+        </div>
+        <div class="pick-odd">1.85</div>
+      </div>
+      <div class="pick-card new">
+        <div class="pick-sport tenis">🎾</div>
+        <div class="pick-info">
+          <div class="pick-match">Djokovic vs Sinner</div>
+          <div class="pick-tip">Total sets: +3.5</div>
+        </div>
+        <div>
+          <span class="pick-badge badge-new">🆕 HOY</span>
+        </div>
+        <div class="pick-odd">1.72</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── WHY ── -->
+<section id="why">
+  <div class="section-inner">
+    <p class="section-label">Nuestras ventajas</p>
+    <h2 class="section-title">¿POR QUÉ<br>WINPROBETS?</h2>
+    <p class="section-sub">No somos un canal más de tipsters. Somos analistas que comparten su trabajo real, con transparencia total y resultados públicos.</p>
+
+    <div class="why-grid">
+      <div class="why-card">
+        <div class="why-num">01</div>
+        <div class="why-icon">📊</div>
+        <h3>Análisis basado en datos</h3>
+        <p>Cada pick viene con su análisis estadístico. Nada de corazonadas, solo probabilidades calculadas y valor real en las cuotas.</p>
+      </div>
+      <div class="why-card">
+        <div class="why-num">02</div>
+        <div class="why-icon">🆓</div>
+        <h3>95% contenido gratuito</h3>
+        <p>Accede a pronósticos diarios, análisis y tendencias sin pagar nada. Creemos en la transparencia desde el primer momento.</p>
+      </div>
+      <div class="why-card">
+        <div class="why-num">03</div>
+        <div class="why-icon">✅</div>
+        <h3>Resultados verificables</h3>
+        <p>Nuestro historial completo está publicado y es auditable por cualquier persona. Sabemos lo que ganamos y lo que fallamos.</p>
+      </div>
+      <div class="why-card">
+        <div class="why-num">04</div>
+        <div class="why-icon">⚡</div>
+        <h3>Alertas instantáneas</h3>
+        <p>Recibe las picks directamente en tu móvil antes de que las cuotas se muevan. Velocidad marca la diferencia en el valor esperado.</p>
+      </div>
+      <div class="why-card">
+        <div class="why-num">05</div>
+        <div class="why-icon">🌍</div>
+        <h3>Múltiples deportes</h3>
+        <p>Fútbol, baloncesto, tenis, fórmula 1 y más. Cubrimos todas las ligas y competiciones internacionales de primer nivel.</p>
+      </div>
+      <div class="why-card">
+        <div class="why-num">06</div>
+        <div class="why-icon">👥</div>
+        <h3>Comunidad activa</h3>
+        <p>Más de 25.000 personas intercambian opiniones y estrategias diariamente. El conocimiento colectivo eleva a todos.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── TELEGRAM ── -->
+<section id="telegram">
+  <div class="section-inner">
+    <div class="tg-split">
+      <div>
+        <p class="section-label">Únete hoy</p>
+        <h2 class="section-title">WINPROBETS<br>EN TELEGRAM</h2>
+        <p class="section-sub">El canal donde se concentra todo. Análisis en tiempo real, picks del día, resultados y una comunidad que realmente comparte.</p>
+
+        <div class="tg-features">
+          <div class="tg-feature">
+            <div class="tg-feature-icon">📈</div>
+            <div>
+              <h4>Pronósticos con cuota mínima 1.70</h4>
+              <p>Solo publicamos picks con valor real. No relleno, no cuotas de riesgo sin fundamento.</p>
+            </div>
+          </div>
+          <div class="tg-feature">
+            <div class="tg-feature-icon">🔍</div>
+            <div>
+              <h4>Análisis previo a cada pick</h4>
+              <p>Entenderás exactamente por qué apostamos lo que apostamos, no solo el resultado.</p>
+            </div>
+          </div>
+          <div class="tg-feature">
+            <div class="tg-feature-icon">📅</div>
+            <div>
+              <h4>Recap diario de resultados</h4>
+              <p>Cada noche publicamos el balance del día. Transparencia absoluta, sin editar nada.</p>
+            </div>
+          </div>
+          <div class="tg-feature">
+            <div class="tg-feature-icon">🎁</div>
+            <div>
+              <h4>Picks VIP gratuitos periódicamente</h4>
+              <p>Compartimos análisis premium abiertos a toda la comunidad de forma regular.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Telegram mockup -->
+      <div class="tg-visual">
+        <div class="tg-logo-wrap">
+          <div class="tg-circle">✈️</div>
+          <div class="tg-name">Win<span>Pro</span>bets</div>
+        </div>
+        <div class="tg-members">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="var(--accent)"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+          <div>
+            <div class="tg-members-num">25.418</div>
+            <div class="tg-members-label"><strong>miembros activos</strong> en el canal</div>
+          </div>
+        </div>
+        <div class="tg-msgs">
+          <div class="msg">
+            <div class="msg-av av-bot">W</div>
+            <div>
+              <div class="msg-bubble bot-msg">
+                ⚽ <strong>PICK DEL DÍA</strong><br>
+                Atlético – Valencia<br>
+                <span class="highlight">AMBOS MARCAN: SÍ @ 1.95</span>
+              </div>
+              <div class="msg-time">WinProbets · 18:32</div>
+            </div>
+          </div>
+          <div class="msg">
+            <div class="msg-av av-user">R</div>
+            <div>
+              <div class="msg-bubble">¡Anotado! Ya llevo 8/10 esta semana 🔥</div>
+              <div class="msg-time">Ricardo_AP · 18:47</div>
+            </div>
+          </div>
+          <div class="msg">
+            <div class="msg-av av-bot">W</div>
+            <div>
+              <div class="msg-bubble bot-msg">
+                ✅ <strong>RESULTADO:</strong> WON +0.95u<br>
+                Acumulado mes: <span class="highlight">+18.3 unidades</span>
+              </div>
+              <div class="msg-time">WinProbets · 22:15</div>
+            </div>
+          </div>
+        </div>
+        <a href="https://t.me/+CH8wdLsJL6JkN2Nk" class="btn-primary" style="width:100%;justify-content:center;">
+          <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+          Unirse al canal gratis
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CTA BANNER ── -->
+<section id="cta">
+  <div class="section-inner">
+    <div class="cta-inner">
+      <div class="cta-glow"></div>
+      <p class="section-label" style="position:relative;">La comunidad te espera</p>
+      <h2 class="section-title" style="position:relative;">¿SIGUES<br>APOSTANDO A CIEGAS?</h2>
+      <p class="section-sub" style="position:relative;margin:1rem auto 2.5rem;text-align:center;">
+        Únete gratis hoy y empieza a apostar con información real. Sin compromisos, sin tarjetas, sin trampas.
+      </p>
+      <a href="https://t.me/+CH8wdLsJL6JkN2Nk" class="btn-primary" style="position:relative;font-size:1.1rem;padding:1.1rem 2.5rem;">
+        <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+        Unirse a WinProbets – Es gratis
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="footer-logo">Win<span>Pro</span>bets</div>
+  <ul class="footer-links">
+    <li><a href="#why">Por qué nosotros</a></li>
+    <li><a href="#telegram">Telegram</a></li>
+    <li><a href="#">Aviso legal</a></li>
+    <li><a href="#">Privacidad</a></li>
+  </ul>
+  <div class="footer-socials">
+    <a class="social-btn" href="#" aria-label="Instagram">
+      <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/></svg>
+    </a>
+    <a class="social-btn" href="#" aria-label="Twitter/X">
+      <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+    </a>
+    <a class="social-btn" href="#" aria-label="Telegram">
+      <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+    </a>
+  </div>
+  <div class="footer-copy">
+    © 2025 WinProbets · Las apuestas deportivas pueden crear adicción. Juega con responsabilidad. +18
+  </div>
+</footer>
+
+</body>
+</html>
